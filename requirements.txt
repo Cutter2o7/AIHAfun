@@ -1,0 +1,11 @@
+# YouTube Data API (for fetching video links)
+google-api-python-client==2.126.0
+
+# Weather API wrapper (e.g., Weather.com or generic HTTP request support)
+requests==2.31.0
+
+# Open environment variables from .env file
+python-dotenv==1.0.1
+
+# Open Windows applications (optional, if using Python to run local programs)
+pywin32==306
