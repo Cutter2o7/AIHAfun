@@ -8,4 +8,4 @@ requests==2.31.0
 python-dotenv==1.0.1
 
 # Open Windows applications (optional, if using Python to run local programs)
-pywin32==306
+#pywin32==306
