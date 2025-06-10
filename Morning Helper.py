@@ -1,4 +1,5 @@
 # === 1. Imports and Configuration ===
+import requests
 def load_config():
     """Load user settings, API keys, file paths, and URLs."""
     pass
@@ -30,7 +31,35 @@ def run_study_timers():
 # === 4. Weather ===
 def fetch_weather():
     """Fetch and display the current weather for the user's location."""
-    pass
+    # Coordinates for 32°41'00.8"N 97°24'51.2"W
+    latitude = 32.683556
+    longitude = -97.414222
+
+    # Step 1: Get the grid forecast URL from the /points endpoint
+    points_url = f"https://api.weather.gov/points/{latitude},{longitude}"
+    try:
+        response = requests.get(points_url, timeout=10)
+        response.raise_for_status()
+        forecast_url = response.json()["properties"]["forecast"]
+    except (requests.RequestException, KeyError) as err:
+        print(f"Unable to determine forecast URL: {err}")
+        return
+
+    # Step 2: Retrieve the forecast
+    try:
+        forecast_resp = requests.get(forecast_url, timeout=10)
+        forecast_resp.raise_for_status()
+        periods = forecast_resp.json()["properties"]["periods"]
+    except (requests.RequestException, KeyError) as err:
+        print(f"Unable to fetch forecast data: {err}")
+        return
+
+    # Display forecast periods
+    print("\nWeather Forecast:")
+    for period in periods:
+        name = period.get("name")
+        detailed = period.get("detailedForecast")
+        print(f"{name}: {detailed}")
 
 # === 5. Novel Writing Prompt ===
 def prompt_novel_scene_writing():
