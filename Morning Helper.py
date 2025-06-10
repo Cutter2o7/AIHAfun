@@ -1,13 +1,55 @@
 # === 1. Imports and Configuration ===
+import os
 import requests
+from dotenv import load_dotenv
+from googleapiclient.discovery import build
 def load_config():
-    """Load user settings, API keys, file paths, and URLs."""
-    pass
+    """Load user settings and environment variables."""
+    load_dotenv()
 
 # === 2. Fetch Content ===
 def fetch_daily_dose_hebrew():
-    """Fetch and prepare Daily Dose of Hebrew video link."""
-    pass
+    """Fetch and display the latest Daily Dose of Hebrew video."""
+    # Load API token from .env
+    load_dotenv()
+    api_key = os.getenv("YOUTUBE_TOKEN")
+    if not api_key:
+        print("YOUTUBE_TOKEN is not set in the environment")
+        return
+
+    # Initialize YouTube client
+    try:
+        youtube = build("youtube", "v3", developerKey=api_key)
+
+        # Determine channel ID for Daily Dose of Hebrew
+        channel_search = (
+            youtube.search()
+            .list(q="Daily Dose of Hebrew", type="channel", part="id", maxResults=1)
+            .execute()
+        )
+        channel_id = channel_search["items"][0]["id"]["channelId"]
+
+        # Get the most recent video from the channel
+        video_search = (
+            youtube.search()
+            .list(
+                channelId=channel_id,
+                part="id,snippet",
+                order="date",
+                maxResults=1,
+                type="video",
+            )
+            .execute()
+        )
+
+        item = video_search["items"][0]
+        video_id = item["id"]["videoId"]
+        title = item["snippet"]["title"]
+        url = f"https://www.youtube.com/watch?v={video_id}"
+
+        print(f"Daily Dose of Hebrew: {title}\n{url}")
+    except Exception as err:
+        print(f"Failed to retrieve Daily Dose of Hebrew video: {err}")
 
 def fetch_daily_dose_greek():
     """Fetch and prepare Daily Dose of Greek video link."""
