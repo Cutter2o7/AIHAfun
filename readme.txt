@@ -6,7 +6,7 @@ This is a customizable Python script that helps streamline your morning routine 
 
 ## 📌 Features
 
-- 📖 Fetches links to **Daily Dose of Hebrew and Greek**
+- 📖 Fetches links to **Daily Dose of Hebrew and Greek** and retrieves the verse text from RapidAPI
 - 🛠 Opens Bible study tools and documents
 - ⏲ Runs countdown timers for study and creative sessions
 - ☁️ Gets real-time **weather updates**
@@ -23,3 +23,9 @@ This is a customizable Python script that helps streamline your morning routine 
    ```bash
    git clone https://github.com/yourusername/morning-routine-assistant.git
    cd morning-routine-assistant
+   ```
+
+2. **Set environment variables** (`.env` file works):
+   - `YOUTUBE_TOKEN` – token for YouTube Data API
+   - `RAPIDAPI_KEY` – key for iq-bible API
+   - `RAPIDAPI_HOST` – host value for iq-bible API
