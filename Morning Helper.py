@@ -2,6 +2,7 @@
 import os
 import re
 import requests
+import time
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 
@@ -221,7 +222,15 @@ def open_bible_study_tools():
 # === 3. Timers for Language and Study ===
 def start_timer(name, minutes):
     """Start a named countdown timer for a given duration."""
-    pass
+    total_seconds = int(minutes * 60)
+    print(f"\nStarting {name} for {minutes} minute(s)...")
+    while total_seconds > 0:
+        mins, secs = divmod(total_seconds, 60)
+        timer_display = f"{mins:02d}:{secs:02d}"
+        print(f"{name}: {timer_display}", end="\r", flush=True)
+        time.sleep(1)
+        total_seconds -= 1
+    print(f"{name} complete!             ")
 
 def run_study_timers():
     """Run timers for Hebrew, Greek, and Bible study sessions."""
@@ -314,14 +323,21 @@ def generate_todo_list():
 # === 8. Main Routine ===
 def main():
     load_config()
-    
-    # --- Fetch and open Bible content ---
+
+    # --- Timed study routine ---
+    start_timer("Prayer Timer", 5)
+
+    # Daily Dose of Hebrew followed by practice
     fetch_daily_dose_hebrew()
+    start_timer("Daily Hebrew Practice", 10)
+
+    # Daily Dose of Greek followed by practice
     fetch_daily_dose_greek()
+    start_timer("Daily Greek Practice", 10)
+
+    # Open study tools then timed study session
     open_bible_study_tools()
-    
-    # --- Run study timers ---
-    run_study_timers()
+    start_timer("Daily study", 10)
     
     # --- Post-study weather check ---
     fetch_weather()
