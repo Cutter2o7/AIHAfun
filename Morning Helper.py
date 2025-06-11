@@ -15,6 +15,8 @@ except ImportError:  # noqa: W0707
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 load_dotenv()
+HEBREW_TRANSLATION_FILE = os.getenv("HEBREW_TRANSLATION_FILE")
+GREEK_TRANSLATION_FILE = os.getenv("GREEK_TRANSLATION_FILE")
 
 
 # Mapping of Bible books to numerical codes used by the IQ Bible API
@@ -40,7 +42,8 @@ BOOK_CODES = {
     "Psalms": 19,
     "Proverbs": 20,
     "Ecclesiastes": 21,
-    "Song of Solomon", "Song of Songs": 22,
+    "Song of Solomon": 22,
+    "Song of Songs": 22,
     "Isaiah": 23,
     "Jeremiah": 24,
     "Lamentations": 25,
@@ -106,11 +109,10 @@ def parse_reference(title):
     
 
 
-def open_translation_spreadsheet(env_var):
-    """Copy the spreadsheet referenced by env_var to the Desktop and open it."""
-    path = os.getenv(env_var)
+def open_translation_spreadsheet(path):
+    """Copy the spreadsheet at ``path`` to the Desktop and open it."""
     if not path:
-        print(f"{env_var} not configured in .env")
+        print("Translation file path not configured in .env")
         return
     src = Path(path).expanduser()
     if not src.is_file():
@@ -192,7 +194,7 @@ def fetch_daily_dose_hebrew():
         print(f"Daily Dose of Hebrew: {title}\n{url}")
 
         # Open today's translation spreadsheet
-        open_translation_spreadsheet("HEBREW_TRANSLATION_FILE")
+        open_translation_spreadsheet(HEBREW_TRANSLATION_FILE)
 
         verse_id = parse_reference(title)
         if verse_id:
@@ -266,7 +268,7 @@ def fetch_daily_dose_greek():
         print(f"Daily Dose of Greek: {title}\n{url}")
 
         # Open today's translation spreadsheet
-        open_translation_spreadsheet("GREEK_TRANSLATION_FILE")
+        open_translation_spreadsheet(GREEK_TRANSLATION_FILE)
         webbrowser.open(url)
     except Exception as err:
         print(f"Failed to retrieve Daily Dose of Greek video: {err}")
