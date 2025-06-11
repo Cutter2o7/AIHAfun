@@ -14,6 +14,8 @@ except ImportError:  # noqa: W0707
     uno = None
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
+load_dotenv()
+
 
 # Mapping of Bible books to numerical codes used by the IQ Bible API
 BOOK_CODES = {
@@ -101,10 +103,7 @@ def parse_reference(title):
     chapter = int(match.group(2))
     verse = int(match.group(3))
     return f"{book_id}{chapter:03d}{verse:03d}"
-
-def load_config():
-    """Load user settings and environment variables."""
-    load_dotenv()
+    
 
 
 def open_translation_spreadsheet(env_var):
@@ -413,7 +412,6 @@ def generate_todo_list():
 
 # === 8. Main Routine ===
 def main():
-    load_config()
 
     # --- Timed study routine ---
     #start_timer("Prayer Timer", 5)
