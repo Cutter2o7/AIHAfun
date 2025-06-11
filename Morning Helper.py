@@ -1,8 +1,102 @@
 # === 1. Imports and Configuration ===
 import os
+import re
 import requests
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
+
+# Mapping of Bible books to numerical codes used by the IQ Bible API
+BOOK_CODES = {
+    "Genesis": 1,
+    "Exodus": 2,
+    "Leviticus": 3,
+    "Numbers": 4,
+    "Deuteronomy": 5,
+    "Joshua": 6,
+    "Judges": 7,
+    "Ruth": 8,
+    "1 Samuel": 9,
+    "2 Samuel": 9,
+    "Samuel": 9,
+    "1 Kings": 10,
+    "2 Kings": 10,
+    "Kings": 10,
+    "1 Chronicles": 11,
+    "2 Chronicles": 11,
+    "Chronicles": 11,
+    "Ezra": 12,
+    "Nehemiah": 12,
+    "Ezra-Nehemiah": 12,
+    "Esther": 13,
+    "Job": 14,
+    "Psalms": 15,
+    "Proverbs": 16,
+    "Ecclesiastes": 17,
+    "Song of Songs": 18,
+    "Song of Solomon": 18,
+    "Isaiah": 19,
+    "Jeremiah": 20,
+    "Lamentations": 21,
+    "Ezekiel": 22,
+    "Daniel": 23,
+    "Hosea": 24,
+    "Joel": 25,
+    "Amos": 26,
+    "Obadiah": 27,
+    "Jonah": 28,
+    "Micah": 29,
+    "Nahum": 30,
+    "Habakkuk": 31,
+    "Zephaniah": 32,
+    "Haggai": 33,
+    "Zechariah": 34,
+    "Malachi": 35,
+    "Matthew": 36,
+    "Mark": 37,
+    "Luke": 38,
+    "John": 39,
+    "Acts": 40,
+    "Romans": 41,
+    "1 Corinthians": 42,
+    "2 Corinthians": 43,
+    "Galatians": 44,
+    "Ephesians": 45,
+    "Philippians": 46,
+    "Colossians": 47,
+    "1 Thessalonians": 48,
+    "2 Thessalonians": 49,
+    "1 Timothy": 50,
+    "2 Timothy": 51,
+    "Titus": 52,
+    "Philemon": 53,
+    "Hebrews": 54,
+    "James": 55,
+    "1 Peter": 56,
+    "2 Peter": 57,
+    "1 John": 58,
+    "2 John": 59,
+    "3 John": 60,
+    "Jude": 61,
+    "Revelation": 62,
+}
+
+def parse_reference(title):
+    """Extract verse information from a video title."""
+    pattern = r"([1-3]?\s?[A-Za-z ]+?)\s+(\d+):(\d+)"
+    match = re.search(pattern, title)
+    if not match:
+        return None
+
+    book_name = match.group(1).strip()
+    # Normalize spacing and capitalization for lookup
+    book_key = " ".join(word.capitalize() for word in book_name.split())
+    book_id = BOOK_CODES.get(book_key)
+    if book_id is None:
+        return None
+    chapter = int(match.group(2))
+    verse = int(match.group(3))
+    return f"{book_id:02d}{chapter:03d}{verse:03d}"
+
 def load_config():
     """Load user settings and environment variables."""
     load_dotenv()
@@ -48,6 +142,32 @@ def fetch_daily_dose_hebrew():
         url = f"https://www.youtube.com/watch?v={video_id}"
 
         print(f"Daily Dose of Hebrew: {title}\n{url}")
+
+        verse_id = parse_reference(title)
+        if verse_id:
+            api_key_rapid = os.getenv("RAPIDAPI_KEY")
+            api_host = os.getenv("RAPIDAPI_HOST")
+            if api_key_rapid and api_host:
+                headers = {
+                    "x-rapidapi-key": api_key_rapid,
+                    "x-rapidapi-host": api_host,
+                }
+                try:
+                    resp = requests.get(
+                        "https://iq-bible.p.rapidapi.com/GetOriginalText",
+                        headers=headers,
+                        params={"verseId": verse_id},
+                        timeout=10,
+                    )
+                    resp.raise_for_status()
+                    data = resp.json()
+                    print(data)
+                except Exception as err:
+                    print(f"Failed to fetch verse text: {err}")
+            else:
+                print("RAPIDAPI credentials not set in environment")
+        else:
+            print("Unable to parse verse reference from title")
     except Exception as err:
         print(f"Failed to retrieve Daily Dose of Hebrew video: {err}")
 
