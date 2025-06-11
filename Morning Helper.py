@@ -313,6 +313,14 @@ def start_timer(name, minutes):
             progress_var.set(minutes * 60)
             root.after(2000, root.destroy)
 
+    def skip_timer():
+        nonlocal total_seconds
+        total_seconds = 0
+        update()
+
+    skip_button = tk.Button(root, text="Skip", command=skip_timer)
+    skip_button.pack(pady=5)
+
     update()
     root.mainloop()
 
