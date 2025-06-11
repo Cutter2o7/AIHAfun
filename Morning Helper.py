@@ -231,22 +231,24 @@ def run_study_timers():
 
 # === 4. Weather ===
 def fetch_weather():
-    """Fetch and display the current weather for the user's location."""
+    """Fetch and display the hourly weather forecast for the next two days."""
+    from datetime import datetime, timezone, timedelta
+
     # Coordinates for 32°41'00.8"N 97°24'51.2"W
     latitude = 32.683556
     longitude = -97.414222
 
-    # Step 1: Get the grid forecast URL from the /points endpoint
+    # Step 1: Get the hourly forecast URL from the /points endpoint
     points_url = f"https://api.weather.gov/points/{latitude},{longitude}"
     try:
         response = requests.get(points_url, timeout=10)
         response.raise_for_status()
-        forecast_url = response.json()["properties"]["forecast"]
+        forecast_url = response.json()["properties"]["forecastHourly"]
     except (requests.RequestException, KeyError) as err:
-        print(f"Unable to determine forecast URL: {err}")
+        print(f"Unable to determine hourly forecast URL: {err}")
         return
 
-    # Step 2: Retrieve the forecast
+    # Step 2: Retrieve the hourly forecast
     try:
         forecast_resp = requests.get(forecast_url, timeout=10)
         forecast_resp.raise_for_status()
@@ -255,12 +257,28 @@ def fetch_weather():
         print(f"Unable to fetch forecast data: {err}")
         return
 
-    # Display forecast periods
-    print("\nWeather Forecast:")
+    # Filter to the next two days
+    now = datetime.now(timezone.utc)
+    cutoff = now + timedelta(days=2)
+
+    print("\nHourly Forecast (next 48 hours):")
     for period in periods:
-        name = period.get("name")
-        detailed = period.get("detailedForecast")
-        print(f"{name}: {detailed}")
+        start_time_str = period.get("startTime")
+        if not start_time_str:
+            continue
+        try:
+            start_time = datetime.fromisoformat(start_time_str)
+        except ValueError:
+            # If timezone info is missing, assume UTC
+            start_time = datetime.fromisoformat(start_time_str + "+00:00")
+        if start_time >= cutoff:
+            break
+
+        name = period.get("name") or start_time.strftime("%a %I %p")
+        short = period.get("shortForecast")
+        temp = period.get("temperature")
+        unit = period.get("temperatureUnit", "")
+        print(f"{name}: {temp}{unit}, {short}")
 
 # === 5. Novel Writing Prompt ===
 def prompt_novel_scene_writing():
