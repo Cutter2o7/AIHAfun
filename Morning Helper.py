@@ -5,6 +5,7 @@ import requests
 import time
 import shutil
 import subprocess
+import webbrowser
 from pathlib import Path
 
 try:
@@ -224,6 +225,8 @@ def fetch_daily_dose_hebrew():
                 print("RAPIDAPI credentials not set in environment")
         else:
             print("Unable to parse verse reference from title")
+
+        webbrowser.open(url)
     except Exception as err:
         print(f"Failed to retrieve Daily Dose of Hebrew video: {err}")
 
@@ -270,6 +273,7 @@ def fetch_daily_dose_greek():
 
         # Open today's translation spreadsheet
         open_translation_spreadsheet("GREEK_TRANSLATION_FILE")
+        webbrowser.open(url)
     except Exception as err:
         print(f"Failed to retrieve Daily Dose of Greek video: {err}")
 
