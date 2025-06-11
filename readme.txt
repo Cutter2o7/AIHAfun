@@ -8,7 +8,7 @@ This is a customizable Python script that helps streamline your morning routine 
 
 - 📖 Fetches links to **Daily Dose of Hebrew and Greek** and retrieves the verse text from RapidAPI
 - 🛠 Opens Bible study tools and documents
-- ⏲ Runs countdown timers for prayer, language practice, study, and creative sessions
+- ⏲ Runs countdown timers with a UI progress bar for prayer, language practice, study, and creative sessions
 - ☁️ Gets real-time **weather updates**
 - ✍️ Prompts you to write scenes for your novel
 - 🎨 Prompts you to generate AI-based images
