@@ -3,6 +3,14 @@ import os
 import re
 import requests
 import time
+import shutil
+import subprocess
+from pathlib import Path
+
+try:
+    import uno  # LibreOffice UNO API for Calc automation
+except ImportError:  # noqa: W0707
+    uno = None
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 
@@ -102,6 +110,50 @@ def load_config():
     """Load user settings and environment variables."""
     load_dotenv()
 
+
+def open_translation_spreadsheet(env_var):
+    """Copy the spreadsheet referenced by env_var to the Desktop and open it."""
+    path = os.getenv(env_var)
+    if not path:
+        print(f"{env_var} not configured in .env")
+        return
+    src = Path(path).expanduser()
+    if not src.is_file():
+        print(f"Translation file not found: {src}")
+        return
+    desktop = Path.home() / "Desktop"
+    desktop.mkdir(parents=True, exist_ok=True)
+    dest = desktop / src.name
+    try:
+        shutil.copy(src, dest)
+    except Exception as err:
+        print(f"Failed to copy translation file: {err}")
+        return
+
+    # Attempt to use LibreOffice UNO to open the spreadsheet
+    if uno is not None:
+        try:
+            local_ctx = uno.getComponentContext()
+            resolver = local_ctx.ServiceManager.createInstanceWithContext(
+                "com.sun.star.bridge.UnoUrlResolver", local_ctx
+            )
+            ctx = resolver.resolve(
+                "uno:socket,host=localhost,port=2002;urp;StarOffice.ComponentContext"
+            )
+            desktop_srv = ctx.ServiceManager.createInstanceWithContext(
+                "com.sun.star.frame.Desktop", ctx
+            )
+            desktop_srv.loadComponentFromURL(dest.as_uri(), "_blank", 0, tuple())
+            return
+        except Exception as err:
+            print(f"UNO open failed: {err}")
+
+    # Fallback to launching LibreOffice directly
+    try:
+        subprocess.Popen(["libreoffice", "--calc", str(dest)])
+    except Exception as err:
+        print(f"Failed to open translation file {dest}: {err}")
+
 # === 2. Fetch Content ===
 def fetch_daily_dose_hebrew():
     """Fetch and display the latest Daily Dose of Hebrew video."""
@@ -143,6 +195,9 @@ def fetch_daily_dose_hebrew():
         url = f"https://www.youtube.com/watch?v={video_id}"
 
         print(f"Daily Dose of Hebrew: {title}\n{url}")
+
+        # Open today's translation spreadsheet
+        open_translation_spreadsheet("HEBREW_TRANSLATION_FILE")
 
         verse_id = parse_reference(title)
         if verse_id:
@@ -212,6 +267,9 @@ def fetch_daily_dose_greek():
         url = f"https://www.youtube.com/watch?v={video_id}"
 
         print(f"Daily Dose of Greek: {title}\n{url}")
+
+        # Open today's translation spreadsheet
+        open_translation_spreadsheet("GREEK_TRANSLATION_FILE")
     except Exception as err:
         print(f"Failed to retrieve Daily Dose of Greek video: {err}")
 
