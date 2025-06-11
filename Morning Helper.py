@@ -221,16 +221,42 @@ def open_bible_study_tools():
 
 # === 3. Timers for Language and Study ===
 def start_timer(name, minutes):
-    """Start a named countdown timer for a given duration."""
+    """Start a named countdown timer with a Tkinter progress bar."""
+    import tkinter as tk
+    from tkinter import ttk
+
     total_seconds = int(minutes * 60)
-    print(f"\nStarting {name} for {minutes} minute(s)...")
-    while total_seconds > 0:
+
+    root = tk.Tk()
+    root.title(f"{name} Timer")
+
+    progress_var = tk.DoubleVar(value=0)
+    progress = ttk.Progressbar(
+        root,
+        maximum=total_seconds,
+        length=300,
+        variable=progress_var,
+    )
+    progress.pack(padx=20, pady=10)
+
+    label = tk.Label(root, text=f"Time remaining: {minutes:02d}:00")
+    label.pack()
+
+    def update():
+        nonlocal total_seconds
         mins, secs = divmod(total_seconds, 60)
-        timer_display = f"{mins:02d}:{secs:02d}"
-        print(f"{name}: {timer_display}", end="\r", flush=True)
-        time.sleep(1)
-        total_seconds -= 1
-    print(f"{name} complete!             ")
+        label.config(text=f"Time remaining: {mins:02d}:{secs:02d}")
+        progress_var.set((minutes * 60) - total_seconds)
+        if total_seconds > 0:
+            total_seconds -= 1
+            root.after(1000, update)
+        else:
+            label.config(text=f"{name} complete!")
+            progress_var.set(minutes * 60)
+            root.after(2000, root.destroy)
+
+    update()
+    root.mainloop()
 
 def run_study_timers():
     """Run timers for Hebrew, Greek, and Bible study sessions."""
