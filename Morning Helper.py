@@ -26,68 +26,63 @@ BOOK_CODES = {
     "Judges": 7,
     "Ruth": 8,
     "1 Samuel": 9,
-    "2 Samuel": 9,
-    "Samuel": 9,
-    "1 Kings": 10,
-    "2 Kings": 10,
-    "Kings": 10,
-    "1 Chronicles": 11,
-    "2 Chronicles": 11,
-    "Chronicles": 11,
-    "Ezra": 12,
-    "Nehemiah": 12,
-    "Ezra-Nehemiah": 12,
-    "Esther": 13,
-    "Job": 14,
-    "Psalms": 15,
-    "Proverbs": 16,
-    "Ecclesiastes": 17,
-    "Song of Songs": 18,
-    "Song of Solomon": 18,
-    "Isaiah": 19,
-    "Jeremiah": 20,
-    "Lamentations": 21,
-    "Ezekiel": 22,
-    "Daniel": 23,
-    "Hosea": 24,
-    "Joel": 25,
-    "Amos": 26,
-    "Obadiah": 27,
-    "Jonah": 28,
-    "Micah": 29,
-    "Nahum": 30,
-    "Habakkuk": 31,
-    "Zephaniah": 32,
-    "Haggai": 33,
-    "Zechariah": 34,
-    "Malachi": 35,
-    "Matthew": 36,
-    "Mark": 37,
-    "Luke": 38,
-    "John": 39,
-    "Acts": 40,
-    "Romans": 41,
-    "1 Corinthians": 42,
-    "2 Corinthians": 43,
-    "Galatians": 44,
-    "Ephesians": 45,
-    "Philippians": 46,
-    "Colossians": 47,
-    "1 Thessalonians": 48,
-    "2 Thessalonians": 49,
-    "1 Timothy": 50,
-    "2 Timothy": 51,
-    "Titus": 52,
-    "Philemon": 53,
-    "Hebrews": 54,
-    "James": 55,
-    "1 Peter": 56,
-    "2 Peter": 57,
-    "1 John": 58,
-    "2 John": 59,
-    "3 John": 60,
-    "Jude": 61,
-    "Revelation": 62,
+    "2 Samuel": 10,
+    "1 Kings": 11,
+    "2 Kings": 12,
+    "1 Chronicles": 13,
+    "2 Chronicles": 14,
+    "Ezra": 15,
+    "Nehemiah": 16,
+    "Esther": 17,
+    "Job": 18,
+    "Psalms": 19,
+    "Proverbs": 20,
+    "Ecclesiastes": 21,
+    "Song of Solomon", "Song of Songs": 22,
+    "Isaiah": 23,
+    "Jeremiah": 24,
+    "Lamentations": 25,
+    "Ezekiel": 26,
+    "Daniel": 27,
+    "Hosea": 28,
+    "Joel": 29,
+    "Amos": 30,
+    "Obadiah": 31,
+    "Jonah": 32,
+    "Micah": 33,
+    "Nahum": 34,
+    "Habakkuk": 35,
+    "Zephaniah": 36,
+    "Haggai": 37,
+    "Zechariah": 38,
+    "Malachi": 39,
+    "Matthew": 40,
+    "Mark": 41,
+    "Luke": 42,
+    "John": 43,
+    "Acts": 44,
+    "Romans": 45,
+    "1 Corinthians": 46,
+    "2 Corinthians": 47,
+    "Galatians": 48,
+    "Ephesians": 49,
+    "Philippians": 50,
+    "Colossians": 51,
+    "1 Thessalonians": 52,
+    "2 Thessalonians": 53,
+    "1 Timothy": 54,
+    "2 Timothy": 55,
+    "Titus": 56,
+    "Philemon": 57,
+    "Hebrews": 58,
+    "James": 59,
+    "1 Peter": 60,
+    "2 Peter": 61,
+    "1 John": 62,
+    "2 John": 63,
+    "3 John": 64,
+    "Jude": 65,
+    "Revelation": 66,
 }
 
 def parse_reference(title):
@@ -105,7 +100,7 @@ def parse_reference(title):
         return None
     chapter = int(match.group(2))
     verse = int(match.group(3))
-    return f"{book_id:02d}{chapter:03d}{verse:03d}"
+    return f"{book_id}{chapter:03d}{verse:03d}"
 
 def load_config():
     """Load user settings and environment variables."""
@@ -421,7 +416,7 @@ def main():
     load_config()
 
     # --- Timed study routine ---
-    start_timer("Prayer Timer", 5)
+    #start_timer("Prayer Timer", 5)
 
     # Daily Dose of Hebrew followed by practice
     fetch_daily_dose_hebrew()
@@ -439,15 +434,14 @@ def main():
     fetch_weather()
     
     # --- Writing task ---
-    prompt_novel_scene_writing()
+    #prompt_novel_scene_writing()
     
     # --- Art task ---
-    prompt_image_generation()
+    #prompt_image_generation()
     
     # --- Optional extras (if enabled) ---
-    display_daily_verse()
-    generate_todo_list()
+    #display_daily_verse()
+    #generate_todo_list()
 
 if __name__ == "__main__":
     main()
-
