@@ -306,7 +306,7 @@ def fetch_daily_dose_greek():
         print(f"Daily Dose of Greek: {title}\n{url}")
 
         # Open today's translation spreadsheet
-        open_translation_spreadsheet(GREEK_TRANSLATION_FILE)
+        open_translation_spreadsheet("GREEK_TRANSLATION_FILE")
         webbrowser.open(url)
     except Exception as err:
         print(f"Failed to retrieve Daily Dose of Greek video: {err}")
