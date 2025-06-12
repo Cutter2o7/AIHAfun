@@ -15,6 +15,8 @@ except ImportError:  # noqa: W0707
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 load_dotenv()
+HEBREW_TRANSLATION_FILE = os.getenv("HEBREW_TRANSLATION_FILE")
+GREEK_TRANSLATION_FILE = os.getenv("GREEK_TRANSLATION_FILE")
 
 
 # Mapping of Bible books to numerical codes used by the IQ Bible API
@@ -105,6 +107,7 @@ def parse_reference(title):
     verse = int(match.group(3))
     return f"{book_id}{chapter:03d}{verse:03d}"
     
+
 
 
 def open_translation_spreadsheet(env_var):
@@ -224,6 +227,7 @@ def fetch_daily_dose_hebrew():
         # Open today's translation spreadsheet and capture the path
         spreadsheet_path = open_translation_spreadsheet("HEBREW_TRANSLATION_FILE")
 
+
         verse_id = parse_reference(title)
         if verse_id:
             api_key_rapid = os.getenv("RAPIDAPI_KEY")
@@ -302,7 +306,7 @@ def fetch_daily_dose_greek():
         print(f"Daily Dose of Greek: {title}\n{url}")
 
         # Open today's translation spreadsheet
-        open_translation_spreadsheet("GREEK_TRANSLATION_FILE")
+        open_translation_spreadsheet(GREEK_TRANSLATION_FILE)
         webbrowser.open(url)
     except Exception as err:
         print(f"Failed to retrieve Daily Dose of Greek video: {err}")
