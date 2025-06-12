@@ -93,6 +93,20 @@ def mark_called_this_month():
     state["called_this_month"] = True
     _save_state(state)
 
+
+def set_contact_lists(
+    monthly: list[str] | None = None, quarterly: list[str] | None = None
+) -> None:
+    """Replace the stored contact name lists."""
+    state = _load_state()
+    if monthly is not None:
+        state["monthly_contacts"] = list(monthly)
+        state["current_monthly_index"] = -1
+    if quarterly is not None:
+        state["quarterly_contacts"] = list(quarterly)
+        state["current_quarterly_index"] = -1
+    _save_state(state)
+
 def daily_prompt():
     """Print reminders for the current monthly and quarterly contacts."""
     monthly_contact = get_this_weeks_monthly_contact()
