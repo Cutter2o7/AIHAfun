@@ -111,9 +111,13 @@ def parse_reference(title):
 
 
 def open_translation_spreadsheet(env_var):
-    """Copy the spreadsheet referenced by env_var to the Desktop and open it.
+    """Copy the spreadsheet referenced by ``env_var`` to the Desktop and open
+    it with LibreOffice.
 
-    Returns the path to the copied file on success, otherwise ``None``.
+    This helper does not require Microsoft Excel. The workbook should be in
+    ``.xlsx`` format so that ``openpyxl`` can update it and LibreOffice Calc can
+    open it. The function returns the path to the copied file on success,
+    otherwise ``None``.
     """
     path = os.getenv(env_var)
     if not path:
@@ -159,7 +163,12 @@ def open_translation_spreadsheet(env_var):
 
 
 def write_words_to_spreadsheet(file_path, words, start_row=4):
-    """Write the given list of words to column A of an Excel file."""
+    """Write the given list of words to column A of a spreadsheet.
+
+    The file must be in ``.xlsx`` format so that ``openpyxl`` can modify it.
+    LibreOffice users can open and edit the resulting workbook without
+    Microsoft Excel.
+    """
     try:
         from openpyxl import load_workbook
     except Exception as err:
