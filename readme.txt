@@ -33,5 +33,10 @@ This is a customizable Python script that helps streamline your morning routine 
    - `HEBREW_TRANSLATION_FILE` – path to today's Hebrew translation spreadsheet
    - `GREEK_TRANSLATION_FILE` – path to today's Greek translation spreadsheet
 
-This repository also includes `contact_scheduler.py` which manages weekly and monthly call reminders using `contacts_state.json`.
+## 📇 Contact Data Persistence
 
+This repository now includes `contact_storage.py`, a utility module for
+loading and saving your recurring contact lists. Contacts are stored in a
+simple JSON file (`contacts.json`) with fields like `name`, `notes`, and
+`next_call_due`. Use the helper functions to read the list on startup and
+persist any updates back to disk.
