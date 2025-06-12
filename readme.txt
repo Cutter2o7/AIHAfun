@@ -12,6 +12,7 @@ This is a customizable Python script that helps streamline your morning routine 
 - ☁️ Gets real-time **weather updates**
 - ✍️ Prompts you to write scenes for your novel
 - 🎨 Prompts you to generate AI-based images
+- 📞 Reminds you to call your weekly and monthly contacts
 - 📜 Displays a daily Bible verse (optional)
 - 🗂 Generates a to-do list (optional)
 
@@ -31,3 +32,6 @@ This is a customizable Python script that helps streamline your morning routine 
    - `RAPIDAPI_HOST` – host value for iq-bible API
    - `HEBREW_TRANSLATION_FILE` – path to today's Hebrew translation spreadsheet
    - `GREEK_TRANSLATION_FILE` – path to today's Greek translation spreadsheet
+
+This repository also includes `contact_scheduler.py` which manages weekly and monthly call reminders using `contacts_state.json`.
+
