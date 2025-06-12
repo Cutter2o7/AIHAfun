@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Alice",
+    "notes": "Follow up on weekend plans",
+    "next_call_due": "2024-07-01",
+    "called_this_week": false,
+    "called_this_month": false
+  },
+  {
+    "name": "Bob",
+    "notes": "Quarterly check-in",
+    "next_call_due": "2024-09-15",
+    "called_this_week": false,
+    "called_this_month": true
+  }
+]
