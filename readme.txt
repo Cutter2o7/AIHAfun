@@ -32,6 +32,9 @@ This is a customizable Python script that helps streamline your morning routine 
    - `RAPIDAPI_HOST` – host value for iq-bible API
    - `HEBREW_TRANSLATION_FILE` – path to today's Hebrew translation spreadsheet
    - `GREEK_TRANSLATION_FILE` – path to today's Greek translation spreadsheet
+   - `LibreOffice` should be installed. The translation spreadsheets are
+     standard `.xlsx` files that open and save correctly in LibreOffice Calc;
+     Microsoft Excel is optional.
 
 ## 📇 Contact Data Persistence
 
