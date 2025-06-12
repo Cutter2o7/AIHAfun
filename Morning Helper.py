@@ -40,7 +40,8 @@ BOOK_CODES = {
     "Psalms": 19,
     "Proverbs": 20,
     "Ecclesiastes": 21,
-    "Song of Solomon", "Song of Songs": 22,
+    "Song of Solomon": 22,
+    "Song of Songs": 22,
     "Isaiah": 23,
     "Jeremiah": 24,
     "Lamentations": 25,
@@ -107,15 +108,18 @@ def parse_reference(title):
 
 
 def open_translation_spreadsheet(env_var):
-    """Copy the spreadsheet referenced by env_var to the Desktop and open it."""
+    """Copy the spreadsheet referenced by env_var to the Desktop and open it.
+
+    Returns the path to the copied file on success, otherwise ``None``.
+    """
     path = os.getenv(env_var)
     if not path:
         print(f"{env_var} not configured in .env")
-        return
+        return None
     src = Path(path).expanduser()
     if not src.is_file():
         print(f"Translation file not found: {src}")
-        return
+        return None
     desktop = Path.home() / "Desktop"
     desktop.mkdir(parents=True, exist_ok=True)
     dest = desktop / src.name
@@ -123,7 +127,7 @@ def open_translation_spreadsheet(env_var):
         shutil.copy(src, dest)
     except Exception as err:
         print(f"Failed to copy translation file: {err}")
-        return
+        return None
 
     # Attempt to use LibreOffice UNO to open the spreadsheet
     if uno is not None:
@@ -139,7 +143,7 @@ def open_translation_spreadsheet(env_var):
                 "com.sun.star.frame.Desktop", ctx
             )
             desktop_srv.loadComponentFromURL(dest.as_uri(), "_blank", 0, tuple())
-            return
+            return dest
         except Exception as err:
             print(f"UNO open failed: {err}")
 
@@ -148,7 +152,33 @@ def open_translation_spreadsheet(env_var):
         subprocess.Popen(["libreoffice", "--calc", str(dest)])
     except Exception as err:
         print(f"Failed to open translation file {dest}: {err}")
+    return dest
 
+
+def write_words_to_spreadsheet(file_path, words, start_row=4):
+    """Write the given list of words to column A of an Excel file."""
+    try:
+        from openpyxl import load_workbook
+    except Exception as err:
+        print(f"openpyxl not available: {err}")
+        return
+
+    try:
+        wb = load_workbook(file_path)
+    except Exception as err:
+        print(f"Unable to open spreadsheet {file_path}: {err}")
+        return
+
+    ws = wb.active
+    row = start_row
+    for word in words:
+        ws.cell(row=row, column=1, value=word)
+        row += 1
+
+    try:
+        wb.save(file_path)
+    except Exception as err:
+        print(f"Unable to save spreadsheet {file_path}: {err}")
 # === 2. Fetch Content ===
 def fetch_daily_dose_hebrew():
     """Fetch and display the latest Daily Dose of Hebrew video."""
@@ -191,8 +221,8 @@ def fetch_daily_dose_hebrew():
 
         print(f"Daily Dose of Hebrew: {title}\n{url}")
 
-        # Open today's translation spreadsheet
-        open_translation_spreadsheet("HEBREW_TRANSLATION_FILE")
+        # Open today's translation spreadsheet and capture the path
+        spreadsheet_path = open_translation_spreadsheet("HEBREW_TRANSLATION_FILE")
 
         verse_id = parse_reference(title)
         if verse_id:
@@ -212,7 +242,13 @@ def fetch_daily_dose_hebrew():
                     )
                     resp.raise_for_status()
                     data = resp.json()
-                    print(data)
+                    words_sorted = sorted(
+                        data,
+                        key=lambda x: int(x.get("orig_order", 0))
+                    )
+                    words = [entry.get("word", "") for entry in words_sorted]
+                    if spreadsheet_path:
+                        write_words_to_spreadsheet(spreadsheet_path, words)
                 except Exception as err:
                     print(f"Failed to fetch verse text: {err}")
             else:
