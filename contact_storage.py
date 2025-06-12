@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
 
-__all__ = ["load_contacts", "save_contacts", "update_contact"]
+__all__ = ["load_contacts", "save_contacts", "update_contact", "find_contact"]
 
 DEFAULT_FILE = Path("contacts.json")
 
@@ -78,4 +78,12 @@ def update_contact(
         new_contact = {"name": name}
         new_contact.update(fields)
         contacts.append(new_contact)
+
+
+def find_contact(contacts: List[Dict[str, Any]], name: str) -> Dict[str, Any] | None:
+    """Return the contact with ``name`` from *contacts* if present."""
+    for contact in contacts:
+        if contact.get("name") == name:
+            return contact
+    return None
 
