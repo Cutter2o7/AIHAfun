@@ -250,7 +250,7 @@ def fetch_daily_dose_hebrew():
                     resp = requests.get(
                         "https://iq-bible.p.rapidapi.com/GetOriginalText",
                         headers=headers,
-                        params={"verseId": verse_id},
+                        params={"verseId": str(verse_id)},
                         timeout=10,
                     )
                     resp.raise_for_status()
