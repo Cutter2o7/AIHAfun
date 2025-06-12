@@ -32,3 +32,6 @@ This is a customizable Python script that helps streamline your morning routine 
    - `RAPIDAPI_HOST` – host value for iq-bible API
    - `HEBREW_TRANSLATION_FILE` – path to today's Hebrew translation spreadsheet
    - `GREEK_TRANSLATION_FILE` – path to today's Greek translation spreadsheet
+
+This repository also includes `contact_scheduler.py` which manages weekly and monthly call reminders using `contacts_state.json`.
+
