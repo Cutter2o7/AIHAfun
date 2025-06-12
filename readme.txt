@@ -12,6 +12,7 @@ This is a customizable Python script that helps streamline your morning routine 
 - ☁️ Gets real-time **weather updates**
 - ✍️ Prompts you to write scenes for your novel
 - 🎨 Prompts you to generate AI-based images
+- 📝 Manages notes for monthly and quarterly contacts with optional history
 - 📜 Displays a daily Bible verse (optional)
 - 🗂 Generates a to-do list (optional)
 
