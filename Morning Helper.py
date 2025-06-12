@@ -156,7 +156,8 @@ def open_translation_spreadsheet(env_var):
 
     # Fallback to launching LibreOffice directly
     try:
-        subprocess.Popen(["libreoffice", "--calc", str(dest)])
+        libreoffice_exe = os.getenv("LIBREOFFICE_EXE", "libreoffice")
+        subprocess.Popen([libreoffice_exe, "--calc", str(dest)])
     except Exception as err:
         print(f"Failed to open translation file {dest}: {err}")
     return dest
