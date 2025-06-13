@@ -320,8 +320,41 @@ def fetch_daily_dose_greek():
 
         print(f"Daily Dose of Greek: {title}\n{url}")
 
-        # Open today's translation spreadsheet
-        open_translation_spreadsheet("GREEK_TRANSLATION_FILE")
+        # Open today's translation spreadsheet and capture the path
+        spreadsheet_path = open_translation_spreadsheet("GREEK_TRANSLATION_FILE")
+
+        verse_id = parse_reference(title)
+        if verse_id:
+            api_key_rapid = os.getenv("RAPIDAPI_KEY")
+            api_host = os.getenv("RAPIDAPI_HOST")
+            if api_key_rapid and api_host:
+                headers = {
+                    "x-rapidapi-key": api_key_rapid,
+                    "x-rapidapi-host": api_host,
+                }
+                try:
+                    resp = requests.get(
+                        "https://iq-bible.p.rapidapi.com/GetOriginalText",
+                        headers=headers,
+                        params={"verseId": str(verse_id)},
+                        timeout=10,
+                    )
+                    resp.raise_for_status()
+                    data = resp.json()
+                    words_sorted = sorted(
+                        data,
+                        key=lambda x: int(x.get("orig_order", 0))
+                    )
+                    words = [entry.get("word", "") for entry in words_sorted]
+                    if spreadsheet_path:
+                        write_words_to_spreadsheet(spreadsheet_path, words)
+                except Exception as err:
+                    print(f"Failed to fetch verse text: {err}")
+            else:
+                print("RAPIDAPI credentials not set in environment")
+        else:
+            print("Unable to parse verse reference from title")
+
         webbrowser.open(url)
     except Exception as err:
         print(f"Failed to retrieve Daily Dose of Greek video: {err}")
