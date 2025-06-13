@@ -6,6 +6,7 @@ import time
 import shutil
 import subprocess
 import webbrowser
+import warnings
 from pathlib import Path
 
 try:
@@ -172,6 +173,10 @@ def write_words_to_spreadsheet(file_path, words, start_row=4):
     """
     try:
         from openpyxl import load_workbook
+        warnings.filterwarnings(
+            "ignore",
+            message="Cannot parse header or footer so it will be ignored",
+        )
     except Exception as err:
         print(f"openpyxl not available: {err}")
         return
