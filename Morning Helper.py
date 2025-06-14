@@ -120,6 +120,15 @@ def open_translation_spreadsheet(env_var):
     open it. The function returns the path to the copied file on success,
     otherwise ``None``.
     """
+    dest = prepare_translation_spreadsheet(env_var)
+    if dest is None:
+        return None
+    open_spreadsheet(dest)
+    return dest
+
+
+def prepare_translation_spreadsheet(env_var):
+    """Copy the spreadsheet referenced by ``env_var`` to the Desktop."""
     path = os.getenv(env_var)
     if not path:
         print(f"{env_var} not configured in .env")
@@ -136,8 +145,11 @@ def open_translation_spreadsheet(env_var):
     except Exception as err:
         print(f"Failed to copy translation file: {err}")
         return None
+    return dest
 
-    # Attempt to use LibreOffice UNO to open the spreadsheet
+
+def open_spreadsheet(path):
+    """Open an existing spreadsheet with LibreOffice."""
     if uno is not None:
         try:
             local_ctx = uno.getComponentContext()
@@ -150,18 +162,16 @@ def open_translation_spreadsheet(env_var):
             desktop_srv = ctx.ServiceManager.createInstanceWithContext(
                 "com.sun.star.frame.Desktop", ctx
             )
-            desktop_srv.loadComponentFromURL(dest.as_uri(), "_blank", 0, tuple())
-            return dest
+            desktop_srv.loadComponentFromURL(Path(path).as_uri(), "_blank", 0, tuple())
+            return
         except Exception as err:
             print(f"UNO open failed: {err}")
 
-    # Fallback to launching LibreOffice directly
     try:
         libreoffice_exe = os.getenv("LIBREOFFICE_EXE", "libreoffice")
-        subprocess.Popen([libreoffice_exe, "--calc", str(dest)])
+        subprocess.Popen([libreoffice_exe, "--calc", str(path)])
     except Exception as err:
-        print(f"Failed to open translation file {dest}: {err}")
-    return dest
+        print(f"Failed to open translation file {path}: {err}")
 
 
 def write_words_to_spreadsheet(file_path, words, start_row=4):
@@ -239,8 +249,8 @@ def fetch_daily_dose_hebrew():
 
         print(f"Daily Dose of Hebrew: {title}\n{url}")
 
-        # Open today's translation spreadsheet and capture the path
-        spreadsheet_path = open_translation_spreadsheet("HEBREW_TRANSLATION_FILE")
+        # Copy today's translation spreadsheet but don't open it yet
+        spreadsheet_path = prepare_translation_spreadsheet("HEBREW_TRANSLATION_FILE")
 
 
         verse_id = parse_reference(title)
@@ -268,6 +278,7 @@ def fetch_daily_dose_hebrew():
                     words = [entry.get("word", "") for entry in words_sorted]
                     if spreadsheet_path:
                         write_words_to_spreadsheet(spreadsheet_path, words)
+                        open_spreadsheet(spreadsheet_path)
                 except Exception as err:
                     print(f"Failed to fetch verse text: {err}")
             else:
@@ -320,8 +331,8 @@ def fetch_daily_dose_greek():
 
         print(f"Daily Dose of Greek: {title}\n{url}")
 
-        # Open today's translation spreadsheet and capture the path
-        spreadsheet_path = open_translation_spreadsheet("GREEK_TRANSLATION_FILE")
+        # Copy today's translation spreadsheet but don't open it yet
+        spreadsheet_path = prepare_translation_spreadsheet("GREEK_TRANSLATION_FILE")
 
         verse_id = parse_reference(title)
         if verse_id:
@@ -348,6 +359,7 @@ def fetch_daily_dose_greek():
                     words = [entry.get("word", "") for entry in words_sorted]
                     if spreadsheet_path:
                         write_words_to_spreadsheet(spreadsheet_path, words)
+                        open_spreadsheet(spreadsheet_path)
                 except Exception as err:
                     print(f"Failed to fetch verse text: {err}")
             else:
