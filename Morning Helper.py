@@ -107,28 +107,43 @@ def parse_reference(title):
     chapter = int(match.group(2))
     verse = int(match.group(3))
     return f"{book_id}{chapter:03d}{verse:03d}"
+
+
+def reference_slug(title):
+    """Return the verse reference from ``title`` formatted for filenames."""
+    pattern = r"([1-3]?\s?[A-Za-z ]+?)\s+(\d+):(\d+)"
+    match = re.search(pattern, title)
+    if not match:
+        return None
+    book = match.group(1).strip()
+    chapter = match.group(2)
+    verse = match.group(3)
+    return f"{book} {chapter}_{verse}"
     
 
 
 
-def open_translation_spreadsheet(env_var):
-    """Copy the spreadsheet referenced by ``env_var`` to the Desktop and open
-    it with LibreOffice.
+def open_translation_spreadsheet(env_var, ref_slug=None):
+    """Copy the spreadsheet referenced by ``env_var`` and open it.
 
-    This helper does not require Microsoft Excel. The workbook should be in
-    ``.xlsx`` format so that ``openpyxl`` can update it and LibreOffice Calc can
-    open it. The function returns the path to the copied file on success,
-    otherwise ``None``.
+    ``ref_slug`` can be used to rename the copied file.  The helper does not
+    require Microsoft Excel.  The workbook should be in ``.xlsx`` format so that
+    ``openpyxl`` can update it and LibreOffice Calc can open it.  The function
+    returns the path to the copied file on success, otherwise ``None``.
     """
-    dest = prepare_translation_spreadsheet(env_var)
+    dest = prepare_translation_spreadsheet(env_var, ref_slug)
     if dest is None:
         return None
     open_spreadsheet(dest)
     return dest
 
 
-def prepare_translation_spreadsheet(env_var):
-    """Copy the spreadsheet referenced by ``env_var`` to the Desktop."""
+def prepare_translation_spreadsheet(env_var, ref_slug=None):
+    """Copy the spreadsheet referenced by ``env_var`` to ``~/Desktop/Daily Dose``.
+
+    If ``ref_slug`` is provided, the copied file will be renamed using that
+    value with the source file's extension appended.
+    """
     path = os.getenv(env_var)
     if not path:
         print(f"{env_var} not configured in .env")
@@ -137,9 +152,12 @@ def prepare_translation_spreadsheet(env_var):
     if not src.is_file():
         print(f"Translation file not found: {src}")
         return None
-    desktop = Path.home() / "Desktop"
-    desktop.mkdir(parents=True, exist_ok=True)
-    dest = desktop / src.name
+    dest_dir = Path.home() / "Desktop" / "Daily Dose"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    if ref_slug:
+        dest = dest_dir / f"{ref_slug}{src.suffix}"
+    else:
+        dest = dest_dir / src.name
     try:
         shutil.copy(src, dest)
     except Exception as err:
@@ -249,8 +267,12 @@ def fetch_daily_dose_hebrew():
 
         print(f"Daily Dose of Hebrew: {title}\n{url}")
 
+        ref_slug = reference_slug(title)
         # Copy today's translation spreadsheet but don't open it yet
-        spreadsheet_path = prepare_translation_spreadsheet("HEBREW_TRANSLATION_FILE")
+        spreadsheet_path = prepare_translation_spreadsheet(
+            "HEBREW_TRANSLATION_FILE",
+            ref_slug,
+        )
 
 
         verse_id = parse_reference(title)
@@ -331,8 +353,12 @@ def fetch_daily_dose_greek():
 
         print(f"Daily Dose of Greek: {title}\n{url}")
 
+        ref_slug = reference_slug(title)
         # Copy today's translation spreadsheet but don't open it yet
-        spreadsheet_path = prepare_translation_spreadsheet("GREEK_TRANSLATION_FILE")
+        spreadsheet_path = prepare_translation_spreadsheet(
+            "GREEK_TRANSLATION_FILE",
+            ref_slug,
+        )
 
         verse_id = parse_reference(title)
         if verse_id:
