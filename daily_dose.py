@@ -92,6 +92,27 @@ BOOK_CODES = {
     "Revelation": 66,
 }
 
+# Reverse mapping from numerical book codes back to names
+BOOK_NAMES = {value: key for key, value in BOOK_CODES.items()}
+
+
+def slug_from_verse_id(verse_id: str | int) -> str | None:
+    """Return a ``reference_slug`` style string from a numeric verse ID."""
+    s = str(verse_id)
+    if len(s) < 7:
+        return None
+    try:
+        book_id = int(s[:-6])
+        chapter = int(s[-6:-3])
+        verse = int(s[-3:])
+    except ValueError:
+        return None
+
+    book = BOOK_NAMES.get(book_id)
+    if not book:
+        return None
+    return f"{book} {chapter}_{verse}"
+
 
 def parse_reference(title: str) -> str | None:
     """Extract verse information from a video title."""
@@ -258,10 +279,12 @@ def fetch_daily_dose(language: str) -> None:
         url = f"https://www.youtube.com/watch?v={video_id}"
         print(f"{query}: {title}\n{url}")
 
-        ref_slug = reference_slug(title)
-        spreadsheet_path = prepare_translation_spreadsheet(env_var, ref_slug)
-
         verse_id = parse_reference(title)
+        ref_slug = reference_slug(title)
+        if ref_slug is None and verse_id:
+            ref_slug = slug_from_verse_id(verse_id)
+
+        spreadsheet_path = prepare_translation_spreadsheet(env_var, ref_slug)
         if verse_id:
             api_key_rapid = os.getenv("RAPIDAPI_KEY")
             api_host = os.getenv("RAPIDAPI_HOST")
