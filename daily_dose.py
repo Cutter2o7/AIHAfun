@@ -284,6 +284,17 @@ def fetch_daily_dose(language: str) -> None:
         if ref_slug is None and verse_id:
             ref_slug = slug_from_verse_id(verse_id)
 
+        if lang == "hebrew" and verse_id:
+            try:
+                s = str(verse_id)
+                book_id = int(s[:-6])
+                if book_id == BOOK_CODES["Psalms"]:
+                    chapter = int(s[-6:-3])
+                    verse = int(s[-3:]) + 1
+                    verse_id = f"{book_id}{chapter:03d}{verse:03d}"
+            except ValueError:
+                pass
+
         spreadsheet_path = prepare_translation_spreadsheet(env_var, ref_slug)
         if verse_id:
             api_key_rapid = os.getenv("RAPIDAPI_KEY")
