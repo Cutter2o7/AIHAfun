@@ -41,7 +41,7 @@ BOOK_CODES = {
     "Nehemiah": 16,
     "Esther": 17,
     "Job": 18,
-    "Psalms": 19,
+    "Psalm": 19,
     "Proverbs": 20,
     "Ecclesiastes": 21,
     "Song of Solomon": 22,
